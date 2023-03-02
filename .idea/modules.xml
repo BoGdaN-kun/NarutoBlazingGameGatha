@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/NarutoBlazingGameGatha.iml" filepath="$PROJECT_DIR$/.idea/NarutoBlazingGameGatha.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../SSD/SP Service/pythonProject/.idea/pythonProject.iml" filepath="$PROJECT_DIR$/../SSD/SP Service/pythonProject/.idea/pythonProject.iml" />
     </modules>
   </component>
 </project>

@@ -7,9 +7,9 @@ app = Flask(__name__)
 
 
 @app.route('/character')
-def workkkk():
+def character():
     n = NBlazingAPI.NBlazingApi()
-    n = n.getCharacter('Naruto')
+    n = n.getCharacters('Naruto')
     js = jsonpickle.loads(n)
     return js
 

@@ -1,9 +1,11 @@
 from typing import List
 
+import lxml.html
+from lxml import etree
+
 import requests
 from bs4 import BeautifulSoup
 import jsonpickle
-
 from API.NarutoCharacter import Character
 
 
@@ -32,9 +34,9 @@ class NBlazingApi:
                     try:
                         result[1] = links[0]['href']
                         result[4] = "https://naruto-blazing.fandom.com/" + links[2]['href']
-                        result.append( links[1]['href'])
+                        result.append(links[1]['href'])
                         result[-1] = "https://naruto-blazing.fandom.com/" + result[-1]
-                        #print(result)
+                        # print(result)
                         character = Character(result[0], result[1], result[2], result[3], result[4], result[5],
                                               result[6])
                         result = character
@@ -45,17 +47,38 @@ class NBlazingApi:
 
         return lst
 
-    def getCharacter(self, name):
+    def getCharacters(self, name: str):
         characters = self.searchCharacter(name)
         characters.pop(0)
         CharacterJsonFormat = jsonpickle.dumps(characters, unpicklable=False, indent=4)
         return CharacterJsonFormat
 
+    def getCharacterInfo(self, url: str):
+        page = requests.get(url)
+        soup = BeautifulSoup(page.content, "html.parser")
+
+        tables = soup.find("div", class_="lefttablecard")
+        # dom = etree.HTML(str(soup))
+        # print(dom.xpath('/html/body/div[4]/div[3]/div[3]/main/div[3]/div[2]/div[1]/div/div[1]/table[2]'))
+        # page = requests.get(url)
+        # tree = lxml.html.fromstring(page.content)
+        # table = tree.xpath('//div[text()="lefttablecard"]')
+        tabless = tables.find_all('table')
+        rows = tabless[0].find_all('tr')
+        print(rows)
+        for i in rows:
+            print(i)
+            break
+
 
 n = NBlazingApi()
 
-n = n.getCharacter('Naruto')
-# js = jsonpickle.loads(n)
+naruto = n.getCharacters('Naruto')
+js = jsonpickle.loads(naruto)
+# print(js)
+# print()
+n.getCharacterInfo(js[0]['Link'])
+
 # print(js)
 
 # page = requests.get(js[0]["Link"])
