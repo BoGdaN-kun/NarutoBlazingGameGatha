@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import lxml
 import requests
 from bs4 import BeautifulSoup
@@ -36,6 +38,8 @@ class Tables:
         # TODO make a format for the time string
         japaneseReleaseDate = lst[2][0]
         globalReleaseDate = lst[2][1]
+        dictJson = {
+            "releaseDate": {"japaneseReleaseDate": japaneseReleaseDate, "globalReleaseDate": globalReleaseDate}}
 
     def RightTableCard(self):
         page = requests.get(self.url)
@@ -51,6 +55,7 @@ class Tables:
         Range = lst[1][0]
         Luck = lst[1][1]
         Cost = lst[1][2]
+        # TODO think of the way to return it
 
     def FieldBuddyStats(self):
         page = requests.get(self.url)
@@ -74,12 +79,15 @@ class Tables:
         BuddySkill = lst[1][0]
         print(FieldSkill)
         print(BuddySkill)
+        dictJson = {
+            "Skill": {
+                "FieldSkill": FieldSkill,
+                "BuddySkill": BuddySkill
+            }
+        }
+        return dictJson
 
-        # Print the text content of each table
-        # for table in soup_tables:
-        #     print(table.get_text())
-
-    def FieldBuddyStats(self):
+    def Abilities(self):
         page = requests.get(self.url)
         soup = BeautifulSoup(page.content, 'html.parser')
 
@@ -99,37 +107,129 @@ class Tables:
             new_list = [item for item in res if item != '']
             lst.append(new_list)
 
+        # listOfSkills = []
+        # skill = {
+        #
+        # }
+        # for i in range(len(lst)):
+        #     if i != 0:
+        #         listOfSkills.append((lst[i][1], lst[i][2]))
         listOfSkills = []
+        skill = {
+            "Skill": 0,
+            "Description": 0
+        }
         for i in range(len(lst)):
-            if i!=0:
-                listOfSkills.append((lst[i][1],lst[i][2]))
+            if i != 0:
+                skill["Skill"] = lst[i][1]
+                skill["Description"] = lst[i][2]
+                listOfSkills.append(deepcopy(skill))
 
         print(listOfSkills)
 
+    def Status(self):
+        page = requests.get(self.url)
+        soup = BeautifulSoup(page.content, 'html.parser')
+
+        # Convert the BeautifulSoup object to an lxml tree
+        tree = html.fromstring(str(soup))
+
+        # Use an XPath expression to select all table elements on the page
+        tables = tree.xpath('//*[@id="mw-content-text"]/div[1]/table[2]/tbody')
+
+        # Convert each table element back to a BeautifulSoup object
+        soup_table = [BeautifulSoup(html.tostring(table), 'html.parser') for table in tables]
+
+        soup_table = soup_table[0].find_all('tr')
+        lst = []
+        for i in soup_table:
+            res = [clearWord(res.get_text(separator=' ', strip=True)) for res in i]
+            new_list = [item for item in res if item != '']
+            lst.append(new_list)
+        stats = []
+        mini_stats = {
+            "Stat": 0,
+            "Base": 0,
+            "Max": 0,
+            "+Value": 0,
+            "+Abilities": 0
+        }
+        dictJson = {
+            "Missions": 0,
+            "Ninja World Ultimate Showdown": 0
+        }
+
+        for i in range(len(lst)):
+            if i == 3 or i == 4:
+                for index, key in enumerate(mini_stats):
+                    mini_stats[key] = lst[i][index]
+                stats.append(mini_stats)
+
+        dictJson["Missions"] = stats
+        stats = []
+        for i in range(len(lst)):
+            if i in [6, 7, 8]:
+                for index, key in enumerate(mini_stats):
+                    mini_stats[key] = lst[i][index]
+                stats.append(mini_stats)
+        dictJson["Ninja World Ultimate Showdown"] = stats
+        return dictJson
+
+    def Jutsu(self):
+        page = requests.get(self.url)
+        soup = BeautifulSoup(page.content, 'html.parser')
+
+        # Convert the BeautifulSoup object to an lxml tree
+        tree = html.fromstring(str(soup))
+
+        # Use an XPath expression to select all table elements on the page
+        tables = tree.xpath('//*[@id="mw-content-text"]/div[1]/table[5]/tbody')
+
+        # Convert each table element back to a BeautifulSoup object
+        soup_table = [BeautifulSoup(html.tostring(table), 'html.parser') for table in tables]
+
+        soup_table = soup_table[0].find_all('tr')
+        lst = []
+        for i in soup_table:
+            res = [clearWord(res.get_text(separator=' ', strip=True)) for res in i]
+            new_list = [item for item in res if item != '']
+            lst.append(new_list)
+
+        ninjutsuDescription = lst[0][0]
+        ninjutsuDescription = ninjutsuDescription.split(":")
+        ninjutsuDescription = ninjutsuDescription[1]
+
+        chakra = lst[1][2]
+        chakra = chakra.split(": ")
+        chakra = chakra[1]
+
+        mini_stats = {
+            "Jutsu": 0,
+            "HitCount": 0,
+            "Shape": 0,
+            "Range": 0,
+            "Position": 0
+        }
+        description = {
+            "Description": 0,
+            "Chakra": 0
+        }
+
+        description["description"] = ninjutsuDescription
+        description["chakra"] = chakra
+        dictJson = {
+            "Ninjutsu": description,
+            "Jutsu": mini_stats
+        }
+
+        for i in range(len(lst)):
+            if i == 3 or i == 4:
+                for index, key in enumerate(mini_stats):
+                    mini_stats[key] = lst[i][index]
+        dictJson["Jutsu"] = mini_stats
+
+        print(dictJson)
+
 
 x = Tables(url='https://naruto-blazing.fandom.com/wiki/Naruto_Uzumaki_%22The_Worst_Loser%22_(%E2%98%853)')
-x.FieldBuddyStats()
-
-#
-# page = requests.get(self.url)
-# soup = BeautifulSoup(page.content, 'html.parser')
-#
-# # Convert the BeautifulSoup object to an lxml tree
-# tree = html.fromstring(str(soup))
-#
-# # Use an XPath expression to select all table elements on the page
-# tables = tree.xpath('//*[@id="mw-content-text"]/div[1]/table[4]/tbody')
-#
-# # Convert each table element back to a BeautifulSoup object
-# soup_table = [BeautifulSoup(html.tostring(table), 'html.parser') for table in tables]
-#
-# soup_table = soup_table[0].find_all('td')
-# lst = []
-# for i in soup_table:
-#     res = [clearWord(res.text) for res in i if res.text != '' and res.text != '\n']
-#     lst.append(res)
-# filtered_list = [my_list for my_list in lst if my_list]
-# print(filtered_list)
-# # Print the text content of each table
-# # for table in soup_tables:
-# #     print(table.get_text())
+x.Status()
