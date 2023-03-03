@@ -55,10 +55,37 @@ class Tables:
             result = [data.text for data in row.find_all('td')]
             result = [clearWord(res) for res in result]
             lst.append(result)
+        for i in lst:
+            print(i)
         Range = lst[1][0]
         Luck = lst[1][1]
         Cost = lst[1][2]
         # TODO think of the way to return it
+
+    def BasicInfo(self):
+        page = requests.get(self.url)
+        soup = BeautifulSoup(page.content, "html.parser")
+        tables = soup.find("div", class_="righttablecard")
+        tabless = tables.find_all('table')
+        rows = tabless[1].find_all('tr')
+        lst = []
+        for index, row in enumerate(rows):
+            result = [data.text for data in row.find_all('td')]
+            result = [res.replace('\n', '') for res in result]  # strange that clearword doesnt work here
+            lst.append(result)
+
+        number = lst[1][0]
+        element = lst[1][1]
+        rarity = lst[1][2]
+        maxLevel = lst[1][3]
+
+        dictJson = {
+            "Index": number,
+            "Element": element,
+            "Rarity": rarity,
+            "MaxLevel": maxLevel
+        }
+        return dictJson
 
     def FieldBuddyStats(self):
         page = requests.get(self.url)
@@ -86,16 +113,20 @@ class Tables:
         }
         return dictJson
 
-    def Abilities(self):
+    def Abilities(self, stars):
         page = requests.get(self.url)
         soup = BeautifulSoup(page.content, 'html.parser')
 
-        # Convert the BeautifulSoup object to an lxml tree
+        character = soup.find('h1', class_='firstHeading').text
+
+        # Convert the BeautifulSoup object to a lxml tree
         tree = html.fromstring(str(soup))
 
         # Use an XPath expression to select all table elements on the page
-        tables = tree.xpath('//*[@id="mw-content-text"]/div[1]/table[4]/tbody')
-
+        if stars == 3 or stars == 4:
+            tables = tree.xpath(f'//*[@id="mw-content-text"]/div[1]/table[4]/tbody')
+        else:
+            tables = tree.xpath(f'//*[@id="mw-content-text"]/div[1]/table[5]/tbody')
         # Convert each table element back to a BeautifulSoup object
         soup_table = [BeautifulSoup(html.tostring(table), 'html.parser') for table in tables]
 
@@ -174,7 +205,7 @@ class Tables:
         dictJson["Ninja World Ultimate Showdown"] = stats
         return dictJson
 
-    def Jutsu(self):
+    def Jutsu(self, stars):
         page = requests.get(self.url)
         soup = BeautifulSoup(page.content, 'html.parser')
 
@@ -182,8 +213,10 @@ class Tables:
         tree = html.fromstring(str(soup))
 
         # Use an XPath expression to select all table elements on the page
-        tables = tree.xpath('//*[@id="mw-content-text"]/div[1]/table[5]/tbody')
-
+        if stars == 3 or stars == 4:
+            tables = tree.xpath('//*[@id="mw-content-text"]/div[1]/table[5]/tbody')
+        else:
+            tables = tree.xpath('//*[@id="mw-content-text"]/div[1]/table[6]/tbody')
         # Convert each table element back to a BeautifulSoup object
         soup_table = [BeautifulSoup(html.tostring(table), 'html.parser') for table in tables]
 
@@ -193,10 +226,11 @@ class Tables:
             res = [clearWord(res.get_text(separator=' ', strip=True)) for res in i]
             new_list = [item for item in res if item != '']
             lst.append(new_list)
-
-        ninjutsuDescription = lst[0][0]
-        ninjutsuDescription = ninjutsuDescription.split(":")
-        ninjutsuDescription = ninjutsuDescription[1]
+        for i in lst:
+            print(i)
+        ninjutsuName = lst[0][0]
+        ninjutsuName = ninjutsuName.split(":")
+        ninjutsuName = ninjutsuName[1]
 
         chakra = lst[1][2]
         chakra = chakra.split(": ")
@@ -210,25 +244,32 @@ class Tables:
             "Position": 0
         }
         description = {
-            "Description": 0,
-            "Chakra": 0
+            "Name": ninjutsuName,
+            "Description": lst[1][1],
+            "Chakra": chakra
         }
 
-        description["description"] = ninjutsuDescription
-        description["chakra"] = chakra
         dictJson = {
             "Ninjutsu": description,
             "JutsuData": mini_stats
         }
 
-        for i in range(len(lst)):
-            if i == 3 or i == 4:
-                for index, key in enumerate(mini_stats):
-                    mini_stats[key] = lst[i][index]
+        if stars == 3 or stars == 4:
+            for i in range(len(lst)):
+                if i == 3 or i == 4:
+                    for index, key in enumerate(mini_stats):
+                        mini_stats[key] = lst[i][index]
+        else:
+            for i in range(len(lst)):
+                if i == 5:
+                    for index, key in enumerate(mini_stats):
+                        mini_stats[key] = lst[i][index]
         dictJson["JutsuData"] = mini_stats
-
-        print(dictJson)
+        return dictJson
 
 
 x = Tables(url='https://naruto-blazing.fandom.com/wiki/Naruto_Uzumaki_%22The_Worst_Loser%22_(%E2%98%853)')
-x.Jutsu()
+# x = Tables(url='https://naruto-blazing.fandom.com/wiki/Naruto_Uzumaki_%22Unshakeable_Will%22_(%E2%98%856)')
+# x = Tables(url='https://naruto-blazing.fandom.com/wiki/Hashirama_Senju_%22Long-Held_Dream%22_(%E2%98%856)_(Blazing_Awakened)')
+# x = Tables(url='https://naruto-blazing.fandom.com/wiki/Minato_Namikaze_%22Unfading_Courage%22_(%E2%98%855)')
+print(x.Jutsu(4))
