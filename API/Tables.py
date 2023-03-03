@@ -39,7 +39,10 @@ class Tables:
         japaneseReleaseDate = lst[2][0]
         globalReleaseDate = lst[2][1]
         dictJson = {
-            "releaseDate": {"japaneseReleaseDate": japaneseReleaseDate, "globalReleaseDate": globalReleaseDate}}
+            "releaseDate": {"japaneseReleaseDate": japaneseReleaseDate, "globalReleaseDate": globalReleaseDate},
+            "imageLink": image_link
+        }
+        return dictJson
 
     def RightTableCard(self):
         page = requests.get(self.url)
@@ -77,13 +80,9 @@ class Tables:
             lst.append(res)
         FieldSkill = lst[0][0]
         BuddySkill = lst[1][0]
-        print(FieldSkill)
-        print(BuddySkill)
         dictJson = {
-            "Skill": {
-                "FieldSkill": FieldSkill,
-                "BuddySkill": BuddySkill
-            }
+            "FieldSkill": FieldSkill,
+            "BuddySkill": BuddySkill
         }
         return dictJson
 
@@ -125,7 +124,7 @@ class Tables:
                 skill["Description"] = lst[i][2]
                 listOfSkills.append(deepcopy(skill))
 
-        print(listOfSkills)
+        return listOfSkills
 
     def Status(self):
         page = requests.get(self.url)
@@ -219,17 +218,17 @@ class Tables:
         description["chakra"] = chakra
         dictJson = {
             "Ninjutsu": description,
-            "Jutsu": mini_stats
+            "JutsuData": mini_stats
         }
 
         for i in range(len(lst)):
             if i == 3 or i == 4:
                 for index, key in enumerate(mini_stats):
                     mini_stats[key] = lst[i][index]
-        dictJson["Jutsu"] = mini_stats
+        dictJson["JutsuData"] = mini_stats
 
         print(dictJson)
 
 
 x = Tables(url='https://naruto-blazing.fandom.com/wiki/Naruto_Uzumaki_%22The_Worst_Loser%22_(%E2%98%853)')
-x.Status()
+x.Jutsu()

@@ -6,7 +6,10 @@ from lxml import etree
 import requests
 from bs4 import BeautifulSoup
 import jsonpickle
+
+from API.CharacterInfo import CharacterInfo
 from API.NarutoCharacter import Character
+from API.Tables import Tables
 
 
 class NBlazingApi:
@@ -87,24 +90,36 @@ class NBlazingApi:
         :param url: url of the character
         :return: A json format of the character info
         """
-        # get the page and initialize the soup
-        page = requests.get(url)
-        soup = BeautifulSoup(page.content, "html.parser")
+        tables = Tables(url)
+        releaseDate = tables.LeftTableCard()
+        stats = tables.RightTableCard()
+        skill = tables.FieldBuddyStats()
+        abilities = tables.Abilities()
+        status = tables.Status()
+        # TODO REWORK THE JUTSU TABLE
+        jutsu = tables.Jutsu()
 
+        characterInfo = CharacterInfo(releaseDate, stats, skill, abilities, jutsu)
+        CharacterJsonFormat = jsonpickle.dumps(characterInfo, unpicklable=False, indent=4)
+
+        print(CharacterJsonFormat)
+        return CharacterJsonFormat
 
 
 
 n = NBlazingApi()
 
-naruto = n.getCharacters('Naruto')
-js = jsonpickle.loads(naruto)
+# naruto = n.getCharacters('Naruto')
+# js = jsonpickle.loads(naruto)
+#n.getCharacterInfo('https://naruto-blazing.fandom.com/wiki/Minato_Namikaze_%22Unfading_Courage%22_(%E2%98%855)')
+n.getCharacterInfo('https://naruto-blazing.fandom.com/wiki/Naruto_Uzumaki_%22The_Worst_Loser%22_(%E2%98%853)')
 # print(js)
 # print()
-# n.getCharacterInfo(js[0]['Link'])
+# n.getCharacterInfo(js[0]['CharacterURL'])
 
 # print(js)
 
-# page = requests.get(js[0]["Link"])
+# page = requests.get(js[0]["CharacterURL"])
 # soup = BeautifulSoup(page.content, "html.parser")
 # f = open("cev.json",'wb')
 # f.write(soup.encode('ascii', 'ignore'))

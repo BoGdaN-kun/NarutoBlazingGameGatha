@@ -10,5 +10,5 @@ class Character(ABC):
     Rarity: str
     Element: str
     Type: str
-    Link: str
+    CharacterURL: str
 
