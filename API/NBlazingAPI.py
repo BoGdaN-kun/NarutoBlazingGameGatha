@@ -13,30 +13,49 @@ class NBlazingApi:
     def __init__(self):
         self.character = []
         self.charactersURL = "https://naruto-blazing.fandom.com/wiki/Encyclopedia"
+        self.fandomSite = "https://naruto-blazing.fandom.com/"
 
     def searchCharacter(self, name: str) -> List:
+        """
+        Searches for all characters that match the given names
+        :param name: name of the character to search for
+        :return:  a list of all the characters that match the name
+        """
+
+        # get the page and initialize the soup
+
         page = requests.get(self.charactersURL)
         soup = BeautifulSoup(page.content, "html.parser")
+
+        # get the table with all the characters
+
         table = soup.find("table", class_="table")
-        rows = table.find_all('tr')  # find all table rows
+
+        # get all the rows in the table
+        rows = table.find_all('tr')
+
+        # get the header of the table and remove the \n and . from the header
         header = [header.text for header in rows[0].find_all('th')]
         header = [res.replace('\n', '') for res in header]
         header = [res.replace('.', '') for res in header]
-        lst = []
-        lst.append(header)
+        lst = [header]
+
+        # get all the characters that match the name
         for index, row in enumerate(rows):
             result = [data.text for data in row.find_all('td')]
-            if any(name in substr for substr in result):
-                result = [res.replace('\n', '') for res in result]  # remove \n
+            if any(name in substring for substring in result):
+                result = [res.replace('\n', '') for res in result]
                 links = [data for data in row.find_all('a', href=True)]
-
                 if index > 0:
                     try:
+
+                        # We try to fill in all the links for the character needed
                         result[1] = links[0]['href']
-                        result[4] = "https://naruto-blazing.fandom.com/" + links[2]['href']
+                        result[4] = self.fandomSite + links[2]['href']
                         result.append(links[1]['href'])
-                        result[-1] = "https://naruto-blazing.fandom.com/" + result[-1]
-                        # print(result)
+                        result[-1] = self.fandomSite + result[-1]
+
+                        # Create a character object
                         character = Character(result[0], result[1], result[2], result[3], result[4], result[5],
                                               result[6])
                         result = character
@@ -44,31 +63,35 @@ class NBlazingApi:
                         continue
 
                 lst.append(result)
-
         return lst
 
-    def getCharacters(self, name: str):
+    def getCharacters(self, name: str) -> str:
+        """
+        Returns a json format of all the characters that match the given name
+        :param name: name of the character
+        :return: a json format of all the characters that match the name as a string
+        """
         characters = self.searchCharacter(name)
+
+        # remove the header
         characters.pop(0)
+
+        # convert the list to json format
         CharacterJsonFormat = jsonpickle.dumps(characters, unpicklable=False, indent=4)
+
         return CharacterJsonFormat
 
     def getCharacterInfo(self, url: str):
+        """
+        Gets the info of the character
+        :param url: url of the character
+        :return: A json format of the character info
+        """
+        # get the page and initialize the soup
         page = requests.get(url)
         soup = BeautifulSoup(page.content, "html.parser")
 
-        tables = soup.find("div", class_="lefttablecard")
-        # dom = etree.HTML(str(soup))
-        # print(dom.xpath('/html/body/div[4]/div[3]/div[3]/main/div[3]/div[2]/div[1]/div/div[1]/table[2]'))
-        # page = requests.get(url)
-        # tree = lxml.html.fromstring(page.content)
-        # table = tree.xpath('//div[text()="lefttablecard"]')
-        tabless = tables.find_all('table')
-        rows = tabless[0].find_all('tr')
-        print(rows)
-        for i in rows:
-            print(i)
-            break
+
 
 
 n = NBlazingApi()
@@ -77,7 +100,7 @@ naruto = n.getCharacters('Naruto')
 js = jsonpickle.loads(naruto)
 # print(js)
 # print()
-n.getCharacterInfo(js[0]['Link'])
+# n.getCharacterInfo(js[0]['Link'])
 
 # print(js)
 
