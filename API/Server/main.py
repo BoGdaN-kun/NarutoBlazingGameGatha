@@ -7,14 +7,29 @@ from API import NBlazingAPI
 
 app = Flask(__name__)
 
+# Initialize the API
+api = NBlazingAPI.NBlazingApi()
 
-@app.route('/')
-def character():
-    n = NBlazingAPI.NBlazingApi()
-    # n = n.getCharacters('Naruto')
-    n = n.getCharacterInfo('https://naruto-blazing.fandom.com/wiki/Minato_Namikaze_%22Unfading_Courage%22_(%E2%98%855)')
-    js = jsonpickle.loads(n)
-    return Response(json.dumps(js, indent=4), content_type='application/json')
+
+@app.route('/characters/<name>')
+def searchAllCharactersWithName(name):
+    characterR = api.searchAllCharactersWithName(name)
+    jsonR = jsonpickle.loads(characterR)
+    return Response(json.dumps(jsonR, indent=4), content_type='application/json')
+
+
+@app.route('/characters')
+def allCharacters():
+    characterR = api.AllCharacters()
+    jsonR = jsonpickle.loads(characterR)
+    return Response(json.dumps(jsonR, indent=4), content_type='application/json')
+
+
+@app.route('/character/<name>/info')
+def character(name):
+    characterR = api.getCharacterInfoByName(name)
+    jsonR = jsonpickle.loads(characterR)
+    return Response(json.dumps(jsonR, indent=4), content_type='application/json')
 
 
 if __name__ == '__main__':

@@ -1,0 +1,97 @@
+{
+    "Index": "1",
+    "Picture": "https://static.wikia.nocookie.net/naruto-shippuden-ultimate-ninja-blazing/images/1/18/Card-0001.png/revision/latest?cb=20161104203555",
+    "Name": "Naruto Uzumaki \"The Worst Loser\"",
+    "Rarity": "\u2605\u2605\u2605\u2606\u2606",
+    "Element": "https://naruto-blazing.fandom.com/wiki/Category:Heart",
+    "Type": "Character",
+    "CharacterURL": "https://naruto-blazing.fandom.com/wiki/Naruto_Uzumaki_%22The_Worst_Loser%22_(%E2%98%853)",
+    "Misc": {
+        "releaseDate": {
+            "japaneseReleaseDate": "July 14, 2016",
+            "globalReleaseDate": "August 24, 2016"
+        },
+        "imageLink": "https://static.wikia.nocookie.net/naruto-shippuden-ultimate-ninja-blazing/images/8/8f/Portrait-0001.png/revision/latest?cb=20161117033223"
+    },
+    "Stats": {
+        "Missions": [
+            {
+                "Stat": "Health",
+                "Base": "3990",
+                "Max": "7980",
+                "+Value": "(+ 50)",
+                "+Abilities": "(+ 500)"
+            },
+            {
+                "Stat": "Strength",
+                "Base": "290",
+                "Max": "580",
+                "+Value": "(+ 25)",
+                "+Abilities": "(+ 0)"
+            },
+            {
+                "Stat": "Speed",
+                "Base": "54",
+                "Max": "108",
+                "+Value": "(+ 15)",
+                "+Abilities": "(+ 0)"
+            }
+        ],
+        "Ninja World Ultimate Showdown": [
+            {
+                "Stat": "Health",
+                "Base": "3990",
+                "Max": "7980",
+                "+Value": "(+ 50)",
+                "+Abilities": "(+ 500)"
+            },
+            {
+                "Stat": "Strength",
+                "Base": "290",
+                "Max": "580",
+                "+Value": "(+ 25)",
+                "+Abilities": "(+ 0)"
+            },
+            {
+                "Stat": "Speed",
+                "Base": "54",
+                "Max": "108",
+                "+Value": "(+ 15)",
+                "+Abilities": "(+ 0)"
+            }
+        ]
+    },
+    "Skills": {
+        "FieldSkill": "Boosts attack by 65-130.",
+        "BuddySkill": "Boosts attack by 50."
+    },
+    "Sync": "",
+    "Abilities": [
+        {
+            "Skill": "Combination Attack Boost",
+            "Description": "Boosts attack by 1.1x during Combinations."
+        },
+        {
+            "Skill": "Health Recovers w/Map Movement",
+            "Description": "Restores 300 health when moving to a new map."
+        },
+        {
+            "Skill": "Health Boost",
+            "Description": "Boosts health by 100 / 500 ."
+        }
+    ],
+    "Jutsu": {
+        "Ninjutsu": {
+            "Name": " Evil Wind Shuriken",
+            "Description": "2.2x attack toward all enemies in range.",
+            "Chakra": "5"
+        },
+        "JutsuData": {
+            "Jutsu": "Ninjutsu",
+            "HitCount": "4",
+            "Shape": "Circle",
+            "Range": "Mid",
+            "Position": "Center"
+        }
+    }
+}

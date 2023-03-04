@@ -113,10 +113,7 @@ class Tables:
             dictJson["Name"] = row[1]
             dictJson["Description"] = row[2]
             lst.append(deepcopy(dictJson))
-        print(lst)
-        # print(lst)
-        # save the dataframe into a csv file
-        # dfs.to_csv('syncSkills.csv', index=False)
+
         return lst
 
     def FieldBuddyStats(self):
