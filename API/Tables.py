@@ -1,6 +1,7 @@
 from copy import deepcopy
 
 import lxml
+import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 from lxml import html
@@ -89,6 +90,34 @@ class Tables:
             "Cost": rightTableCard[2]
         }
         return dictJson
+
+    def syncSkills(self):
+        page = requests.get(self.url)
+        soup = BeautifulSoup(page.content, 'html.parser')
+
+        # Convert the BeautifulSoup object to a lxml tree
+        tree = html.fromstring(str(soup))
+
+        # Use an XPath expression to select all table elements on the page
+        tables = tree.xpath('//*[@id="mw-content-text"]/div[1]/table[4]/tbody')
+        table_index = 7
+        # transofrm the table into a dataframe
+        dfs = pd.read_html(self.url, header=0)[table_index]
+
+        lst = []
+        dictJson = {
+            "Name": "",
+            "Description": ""
+        }
+        for i, row in dfs.iterrows():
+            dictJson["Name"] = row[1]
+            dictJson["Description"] = row[2]
+            lst.append(deepcopy(dictJson))
+        print(lst)
+        # print(lst)
+        # save the dataframe into a csv file
+        # dfs.to_csv('syncSkills.csv', index=False)
+        return lst
 
     def FieldBuddyStats(self):
         page = requests.get(self.url)
@@ -283,5 +312,5 @@ class Tables:
 x = Tables(url='https://naruto-blazing.fandom.com/wiki/Naruto_Uzumaki_%22The_Worst_Loser%22_(%E2%98%853)')
 # x = Tables(url='https://naruto-blazing.fandom.com/wiki/Naruto_Uzumaki_%22Unshakeable_Will%22_(%E2%98%856)')
 # x = Tables(url='https://naruto-blazing.fandom.com/wiki/Hashirama_Senju_%22Long-Held_Dream%22_(%E2%98%856)_(Blazing_Awakened)')
-# x = Tables(url='https://naruto-blazing.fandom.com/wiki/Minato_Namikaze_%22Unfading_Courage%22_(%E2%98%855)')
-print(x.Status())
+x = Tables(url='https://naruto-blazing.fandom.com/wiki/Minato_Namikaze_%22Unfading_Courage%22_(%E2%98%855)')
+x.syncSkills()

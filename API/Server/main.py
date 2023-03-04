@@ -12,7 +12,7 @@ app = Flask(__name__)
 def character():
     n = NBlazingAPI.NBlazingApi()
     # n = n.getCharacters('Naruto')
-    n = n.getCharacterInfo('https://naruto-blazing.fandom.com/wiki/Naruto_Uzumaki_%22The_Worst_Loser%22_(%E2%98%853)')
+    n = n.getCharacterInfo('https://naruto-blazing.fandom.com/wiki/Minato_Namikaze_%22Unfading_Courage%22_(%E2%98%855)')
     js = jsonpickle.loads(n)
     return Response(json.dumps(js, indent=4), content_type='application/json')
 

@@ -65,6 +65,7 @@
         "FieldSkill": "Boosts attack by 65-130.",
         "BuddySkill": "Boosts attack by 50."
     },
+    "Sync": "",
     "Abilities": [
         {
             "Skill": "Combination Attack Boost",

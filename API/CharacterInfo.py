@@ -9,5 +9,6 @@ class CharacterInfo(Character, ABC):
     Misc: str
     Stats: str
     Skills: str
+    Sync: str
     Abilities: str
     Jutsu: str

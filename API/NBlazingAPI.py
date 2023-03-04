@@ -133,14 +133,22 @@ class NBlazingApi:
         stars = tables.Stars()
         miscs = tables.LeftTableCard()
         skill = tables.FieldBuddyStats()
+
         abilities = tables.Abilities(stars)
         status = tables.Status()
         jutsu = tables.Jutsu(stars)
 
-        characterInfo = CharacterInfo(basicInfo.Index, basicInfo.Picture,
-                                      basicInfo.Name, basicInfo.Rarity,
-                                      basicInfo.Element, basicInfo.Type,
-                                      basicInfo.CharacterURL, miscs, status, skill, abilities, jutsu)
+        if stars == 5:
+            sync = tables.syncSkills()
+            characterInfo = CharacterInfo(basicInfo.Index, basicInfo.Picture,
+                                          basicInfo.Name, basicInfo.Rarity,
+                                          basicInfo.Element, basicInfo.Type,
+                                          basicInfo.CharacterURL, miscs, status, skill, sync, abilities, jutsu)
+        else:
+            characterInfo = CharacterInfo(basicInfo.Index, basicInfo.Picture,
+                                          basicInfo.Name, basicInfo.Rarity,
+                                          basicInfo.Element, basicInfo.Type,
+                                          basicInfo.CharacterURL, miscs, status, skill, '', abilities, jutsu)
         CharacterJsonFormat = jsonpickle.dumps(characterInfo, unpicklable=False, indent=4)
 
         return CharacterJsonFormat
