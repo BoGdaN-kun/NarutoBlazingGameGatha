@@ -1,6 +1,5 @@
 from copy import deepcopy
 
-import lxml
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -12,12 +11,12 @@ from API.Utils import clearWord, countStars
 class Tables:
     def __init__(self, url):
         self.url = url
+        self.page = requests.get(self.url)
+        self.soup = BeautifulSoup(self.page.content, 'html.parser')
 
     def LeftTableCard(self):
-        page = requests.get(self.url)
-        soup = BeautifulSoup(page.content, "html.parser")
 
-        tables = soup.find("div", class_="lefttablecard")
+        tables = self.soup.find("div", class_="lefttablecard")
 
         tabless = tables.find_all('table')
         rows = tabless[0].find_all('tr')
@@ -41,9 +40,8 @@ class Tables:
         return dictJson
 
     def RightTableCard(self):
-        page = requests.get(self.url)
-        soup = BeautifulSoup(page.content, "html.parser")
-        tables = soup.find("div", class_="righttablecard")
+
+        tables = self.soup.find("div", class_="righttablecard")
         tabless = tables.find_all('table')
         rows = tabless[2].find_all('tr')
         lst = []
@@ -63,15 +61,14 @@ class Tables:
         return lst
 
     def BasicInfo(self):
-        page = requests.get(self.url)
-        soup = BeautifulSoup(page.content, "html.parser")
-        tables = soup.find("div", class_="righttablecard")
+
+        tables = self.soup.find("div", class_="righttablecard")
         tabless = tables.find_all('table')
         rows = tabless[1].find_all('tr')
         lst = []
         for index, row in enumerate(rows):
             result = [data.text for data in row.find_all('td')]
-            result = [res.replace('\n', '') for res in result]  # strange that clearword doesnt work here
+            result = [res.replace('\n', '') for res in result]  # strange that clearword doesn't work here
             lst.append(result)
 
         number = lst[1][0]
@@ -92,14 +89,9 @@ class Tables:
         return dictJson
 
     def syncSkills(self):
-        page = requests.get(self.url)
-        soup = BeautifulSoup(page.content, 'html.parser')
-
-        # Convert the BeautifulSoup object to a lxml tree
-        tree = html.fromstring(str(soup))
 
         # Use an XPath expression to select all table elements on the page
-        tables = tree.xpath('//*[@id="mw-content-text"]/div[1]/table[4]/tbody')
+
         table_index = 7
         # transofrm the table into a dataframe
         dfs = pd.read_html(self.url, header=0)[table_index]
@@ -117,11 +109,9 @@ class Tables:
         return lst
 
     def FieldBuddyStats(self):
-        page = requests.get(self.url)
-        soup = BeautifulSoup(page.content, 'html.parser')
 
-        # Convert the BeautifulSoup object to an lxml tree
-        tree = html.fromstring(str(soup))
+        # Convert the BeautifulSoup object to a lxml tree
+        tree = html.fromstring(str(self.soup))
 
         # Use an XPath expression to select all table elements on the page
         tables = tree.xpath('//*[@id="mw-content-text"]/div[1]/table[3]/tbody')
@@ -143,9 +133,8 @@ class Tables:
         return dictJson
 
     def Stars(self):
-        page = requests.get(self.url)
-        soup = BeautifulSoup(page.content, "html.parser")
-        tables = soup.find("div", class_="righttablecard")
+
+        tables = self.soup.find("div", class_="righttablecard")
         tabless = tables.find_all('table')
         rows = tabless[1].find_all('tr')
         lst = []
@@ -157,11 +146,9 @@ class Tables:
         return countStars(rarity)
 
     def Abilities(self, stars):
-        page = requests.get(self.url)
-        soup = BeautifulSoup(page.content, 'html.parser')
 
         # Convert the BeautifulSoup object to a lxml tree
-        tree = html.fromstring(str(soup))
+        tree = html.fromstring(str(self.soup))
 
         # Use an XPath expression to select all table elements on the page
         if stars == 3 or stars == 4:
@@ -199,11 +186,9 @@ class Tables:
         return listOfSkills
 
     def Status(self):
-        page = requests.get(self.url)
-        soup = BeautifulSoup(page.content, 'html.parser')
 
         # Convert the BeautifulSoup object to an lxml tree
-        tree = html.fromstring(str(soup))
+        tree = html.fromstring(str(self.soup))
 
         # Use an XPath expression to select all table elements on the page
         tables = tree.xpath('//*[@id="mw-content-text"]/div[1]/table[2]/tbody')
@@ -246,11 +231,9 @@ class Tables:
         return dictJson
 
     def Jutsu(self, stars):
-        page = requests.get(self.url)
-        soup = BeautifulSoup(page.content, 'html.parser')
 
         # Convert the BeautifulSoup object to an lxml tree
-        tree = html.fromstring(str(soup))
+        tree = html.fromstring(str(self.soup))
 
         # Use an XPath expression to select all table elements on the page
         if stars == 3 or stars == 4:
