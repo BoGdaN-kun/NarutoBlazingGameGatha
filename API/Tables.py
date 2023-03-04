@@ -5,7 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 from lxml import html
 
-from API.Utils import clearWord
+from API.Utils import clearWord, countStars
 
 
 class Tables:
@@ -17,11 +17,6 @@ class Tables:
         soup = BeautifulSoup(page.content, "html.parser")
 
         tables = soup.find("div", class_="lefttablecard")
-        # dom = etree.HTML(str(soup))
-        # print(dom.xpath('/html/body/div[4]/div[3]/div[3]/main/div[3]/div[2]/div[1]/div/div[1]/table[2]'))
-        # page = requests.get(url)
-        # tree = lxml.html.fromstring(page.content)
-        # table = tree.xpath('//div[text()="lefttablecard"]')
 
         tabless = tables.find_all('table')
         rows = tabless[0].find_all('tr')
@@ -55,12 +50,16 @@ class Tables:
             result = [data.text for data in row.find_all('td')]
             result = [clearWord(res) for res in result]
             lst.append(result)
-        for i in lst:
-            print(i)
+
+        lst = []
         Range = lst[1][0]
         Luck = lst[1][1]
         Cost = lst[1][2]
-        # TODO think of the way to return it
+        lst.append(Range)
+        lst.append(Luck)
+        lst.append(Cost)
+
+        return lst
 
     def BasicInfo(self):
         page = requests.get(self.url)
@@ -79,11 +78,15 @@ class Tables:
         rarity = lst[1][2]
         maxLevel = lst[1][3]
 
+        rightTableCard = self.RightTableCard()
         dictJson = {
             "Index": number,
             "Element": element,
             "Rarity": rarity,
-            "MaxLevel": maxLevel
+            "MaxLevel": maxLevel,
+            "Range": rightTableCard[0],
+            "Luck": rightTableCard[1],
+            "Cost": rightTableCard[2]
         }
         return dictJson
 
@@ -113,11 +116,23 @@ class Tables:
         }
         return dictJson
 
+    def Stars(self):
+        page = requests.get(self.url)
+        soup = BeautifulSoup(page.content, "html.parser")
+        tables = soup.find("div", class_="righttablecard")
+        tabless = tables.find_all('table')
+        rows = tabless[1].find_all('tr')
+        lst = []
+        for index, row in enumerate(rows):
+            result = [data.text for data in row.find_all('td')]
+            result = [clearWord(res) for res in result]
+            lst.append(result)
+        rarity = lst[1][2]
+        return countStars(rarity)
+
     def Abilities(self, stars):
         page = requests.get(self.url)
         soup = BeautifulSoup(page.content, 'html.parser')
-
-        character = soup.find('h1', class_='firstHeading').text
 
         # Convert the BeautifulSoup object to a lxml tree
         tree = html.fromstring(str(soup))
@@ -188,20 +203,19 @@ class Tables:
             "Missions": 0,
             "Ninja World Ultimate Showdown": 0
         }
-
         for i in range(len(lst)):
             if i == 3 or i == 4:
                 for index, key in enumerate(mini_stats):
                     mini_stats[key] = lst[i][index]
-                stats.append(mini_stats)
+                stats.append(deepcopy(mini_stats))
 
         dictJson["Missions"] = stats
-        stats = []
+        stats.clear()
         for i in range(len(lst)):
             if i in [6, 7, 8]:
                 for index, key in enumerate(mini_stats):
                     mini_stats[key] = lst[i][index]
-                stats.append(mini_stats)
+                stats.append(deepcopy(mini_stats))
         dictJson["Ninja World Ultimate Showdown"] = stats
         return dictJson
 
@@ -226,8 +240,6 @@ class Tables:
             res = [clearWord(res.get_text(separator=' ', strip=True)) for res in i]
             new_list = [item for item in res if item != '']
             lst.append(new_list)
-        for i in lst:
-            print(i)
         ninjutsuName = lst[0][0]
         ninjutsuName = ninjutsuName.split(":")
         ninjutsuName = ninjutsuName[1]
@@ -272,4 +284,4 @@ x = Tables(url='https://naruto-blazing.fandom.com/wiki/Naruto_Uzumaki_%22The_Wor
 # x = Tables(url='https://naruto-blazing.fandom.com/wiki/Naruto_Uzumaki_%22Unshakeable_Will%22_(%E2%98%856)')
 # x = Tables(url='https://naruto-blazing.fandom.com/wiki/Hashirama_Senju_%22Long-Held_Dream%22_(%E2%98%856)_(Blazing_Awakened)')
 # x = Tables(url='https://naruto-blazing.fandom.com/wiki/Minato_Namikaze_%22Unfading_Courage%22_(%E2%98%855)')
-print(x.Jutsu(4))
+print(x.Status())

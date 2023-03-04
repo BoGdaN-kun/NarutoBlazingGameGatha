@@ -3,7 +3,7 @@ def clearWord(word):
         word.replace('\n', '')
     # if ' ' in word:
     #     word.replace(' ', '')
-    return word
+    return word.strip()
 
 
 def countStars(word):

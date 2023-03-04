@@ -5,7 +5,7 @@ from API.NarutoCharacter import Character
 
 
 @dataclass()
-class CharacterInfo():
+class CharacterInfo(Character, ABC):
     Misc: str
     Stats: str
     Skills: str
